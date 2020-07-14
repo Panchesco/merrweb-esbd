@@ -20,10 +20,10 @@ module.exports = {
 	Before building with npm run build:
 	
 	Switch out the public path before build to the following:
-	'/wp-content/plugins/godat-harvest/app/dist/'
+	'/wp-content/plugins/merrweb-api/dist/'
 	
 	Then, in /wp-content/plugins/godat-harvest/godat-harvest.php find the PHP constant 
-	'GODAT_HARVEST_ENV' and change it to production.
+	'MERRWEBAPI_ENV' and change it to production.
 	#####################################################################
 	
 */

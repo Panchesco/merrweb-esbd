@@ -45,8 +45,10 @@ class MerrWebAPI {
         $this->options = get_option('merrweb_api_settings');
         
         if( isset($_REQUEST['q']) ) {
-            $this->q = sanitize_text_field($_REQUEST['q']);
+            $this->q = urlencode(sanitize_text_field($_REQUEST['q']));
         }
+        
+        
         
         
     }
@@ -126,11 +128,26 @@ function merrweb_api_options_page(  ) {
     function search() {
         
         // Check nonce
+             
+        $this->endpoint = $this->endpoint($this->q);
+        $response = file_get_contents($this->endpoint);
         
+        print $response;
         
-        
+        wp_die();
+ 
     }
     
+    // -----------------------------------------------------------------------------
+    
+    function endpoint($q) {
+	    
+	    $str = 'https://www.dictionaryapi.com/api/v3/references/spanish/json/';
+	    $str .= $q;
+	    $str .= '?key=' . urlencode($this->options['api_key']);
+	    
+	    return $str;
+    }
     
     // -----------------------------------------------------------------------------
     
@@ -139,10 +156,16 @@ function merrweb_api_options_page(  ) {
         global $post;
         
         $data = array(
+	        'url' => site_url() . '/wp-admin/admin-ajax.php',
+	        'headers' => "'Accept' : 'application:json',
+				    	  'Content-Type' : 'application/json;charset=UTF-8'",
             '_wpnonce' => wp_create_nonce('merrweb_api'),
-            'ajax_url' => site_url() . '/wp-admin/admin-ajax.php',
             'q' => '',
+            'action' => 'search',
+            'per_page' => 25,
+            'page' => 1
         );
+
         $html = '';
         
         if( ! has_shortcode( $post->post_content, 'merrweb-spanish') ) {
@@ -183,8 +206,8 @@ $MerrWebAPI = new MerrWebAPI();
 
 add_action( 'admin_menu', [$MerrWebAPI,'merrweb_api_add_admin_menu'] );
 add_action( 'admin_init', [$MerrWebAPI,'merrweb_api_settings_init'] );
-add_action("wp_ajax_methods", [$MerrWebAPI,'dictionary_query']);
-add_action("wp_ajax_nopriv_methods", [$MerrWebAPI,'dictionary_query']);
+add_action("wp_ajax_search", [$MerrWebAPI,'search']);
+add_action("wp_ajax_nopriv_search", [$MerrWebAPI,'search']);
 add_shortcode('merrweb-spanish',[$MerrWebAPI,'app']);
 
    

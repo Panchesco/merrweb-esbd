@@ -14,9 +14,9 @@
  *
  * @wordpress-plugin
  * Plugin Name:       Merriam Webster API
- * Plugin URI:        http://wp.local
+ * Plugin URI:        https://github.com/panchesco/merrweb-api
  * Description:       This is a short description of what the plugin does. It's displayed in the WordPress admin area.
- * Version:           v1.0.0
+ * Version:           1.0.0
  * Author:            Richard Whitmer
  * Author URI:        https://github.com/panchesco
  * License:           GPL-2.0+
@@ -36,7 +36,7 @@ class MerrWebAPI {
     
     var $options;
     var $version = '1.0.0';
-    var $location = 'http://localhost:4000';
+    var $location = 'http://localhost:4000/';
     var $enpoint;
     var $q;
     var $slug = 'merrweb-api';
@@ -46,12 +46,9 @@ class MerrWebAPI {
         $this->options = get_option('merrweb_api_settings');
         
         if( isset($_REQUEST['q']) ) {
-            $this->q = urlencode(sanitize_text_field($_REQUEST['q']));
+            $this->q = sanitize_text_field($_REQUEST['q']);
         }
-        
-        
-        
-        
+
     }
 
 function merrweb_api_add_admin_menu(  ) { 
@@ -160,7 +157,7 @@ function merrweb_api_options_page(  ) {
     function endpoint($q) {
 	    
 	    $str = 'https://www.dictionaryapi.com/api/v3/references/spanish/json/';
-	    $str .= $q;
+	    $str .= $this->q;
 	    $str .= '?key=' . urlencode($this->options['api_key']);
 	    
 	    return $str;
@@ -181,7 +178,10 @@ function merrweb_api_options_page(  ) {
             'action' => 'search',
             'per_page' => 25,
             'page' => 1,
-            'slug' => $this->slug
+            'slug' => $this->slug,
+            'loadingId' => 'loading-status',
+            'loadingClass' => 'loading',
+            'noResultsMsg' => __('No results found for %s. Some suggestions:')
         );
 
         $html = '';
@@ -191,8 +191,8 @@ function merrweb_api_options_page(  ) {
         }
         
         if(MERRWEBAPI_ENV == 'development') {
+	        
 
-            
             // Localize data we'll use in the app.
             wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
             wp_localize_script('merrweb-api-data','merrweb_api',$data);
@@ -206,13 +206,47 @@ function merrweb_api_options_page(  ) {
 						
 
         }
+
+             
+        if( MERRWEBAPI_ENV == 'production') {
+			// Localize data we'll use in the app.
+            wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
+            wp_localize_script('merrweb-api-data','merrweb_api',$data);
+            wp_enqueue_script('merrweb-api-data');
+            
+            // Call the scripts used by Vue
+            wp_register_script('merrweb-api-chunk-vendors', plugins_url() . '/merrweb-api/vue/dist/js/chunk-vendors.3d48aca3.js',['merrweb-api-data'],$this->version,true);
+			wp_register_script('merrweb-api-app', plugins_url() . '/merrweb-api/vue/dist/js/app.e218a4ab.js',['merrweb-api-chunk-vendors'],$this->version,true);
+			wp_enqueue_script('merrweb-api-chunk-vendors');
+			wp_enqueue_script('merrweb-api-app');
+			
+			$html.= '
+			    <link href="/wp-content/plugins/merrweb-api/vue/dist/css/app.0b0a473d.css" rel=preload as=style>
+				<link href="/wp-content/plugins/merrweb-api/vue/dist/js/app.e218a4ab.js" rel=preload as=script>
+				<link href="/wp-content/plugins/merrweb-api/vue/dist/js/chunk-vendors.3d48aca3.js" rel=preload as=script>
+				<link href="/wp-content/plugins/merrweb-api/vue/dist/css/app.0b0a473d.css" rel=stylesheet>
+				<link rel=icon type=image/png sizes=32x32 href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/favicon-32x32.png">
+				<link rel=icon type=image/png sizes=16x16 href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/favicon-16x16.png">
+				<link rel=manifest href="/wp-content/plugins/merrweb-api/vue/dist/manifest.json">
+				<meta name=theme-color content=#4DBA87>
+				<meta name=apple-mobile-web-app-capable content=no>
+				<meta name=apple-mobile-web-app-status-bar-style content=default>
+				<meta name=apple-mobile-web-app-title content=vue>
+				<link rel=apple-touch-icon href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/apple-touch-icon-152x152.png">
+				<link rel=mask-icon href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/safari-pinned-tab.svg" color=#4DBA87>
+				<meta name=msapplication-TileImage content="/wp-content/plugins/merrweb-api/vue/dist/img/icons/msapplication-icon-144x144.png">
+				<meta name=msapplication-TileColor content=#000000>
+			';
+			
+			
+        }    
         
-        
-        
-                    
         $html.='
+        
+
              <noscript>You will need to enable scripting for the short code to work</noscript>
              <div id="app"></div>';
+             
 
         return $html;
         

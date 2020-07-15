@@ -39,6 +39,7 @@ class MerrWebAPI {
     var $location = 'http://localhost:4000';
     var $enpoint;
     var $q;
+    var $slug = 'merrweb-api';
     
     function __construct() {
         
@@ -55,9 +56,20 @@ class MerrWebAPI {
 
 function merrweb_api_add_admin_menu(  ) { 
 
-	add_options_page( 'Merriam-Webster API', 'Merriam-Webster API', 'manage_options', 'merrweb-api', [$this,'merrweb_api_options_page'] );
+	add_options_page( 'Merriam-Webster API', 'Merriam-Webster API', 'manage_options', $this->slug, [$this,'merrweb_api_options_page'] );
 
 }
+
+// ----------------------------------------------------------------------------- 
+
+function merrweb_api_add_settings_link( $links ) {
+	
+    $settings_link = '<a href="options-general.php?page=merrweb-api">' . __( 'Settings' ) . '</a>';
+    array_push( $links, $settings_link );
+  	return $links;
+}
+
+// ----------------------------------------------------------------------------- 
 
 
 function merrweb_api_settings_init(  ) { 
@@ -65,7 +77,7 @@ function merrweb_api_settings_init(  ) {
 	register_setting( 'merrweb-api', 'merrweb_api_settings' );
 
 	add_settings_section(
-		'merrweb_api_pluginPage_section', 
+		'merrweb_api_section', 
 		__( 'Merriam-Webster API Key(s)', 'merrweb-api' ), 
 		[$this,'merrweb_api_settings_section_callback'], 
 		'merrweb-api'
@@ -76,10 +88,12 @@ function merrweb_api_settings_init(  ) {
 		__( 'API Key', 'merrweb-api' ), 
 		[$this,'merrweb_api_api_key_render'], 
 		'merrweb-api', 
-		'merrweb_api_pluginPage_section' 
+		'merrweb_api_section' 
 	);
 
 }
+
+// ----------------------------------------------------------------------------- 
 
 
 function merrweb_api_api_key_render(  ) { 
@@ -90,12 +104,16 @@ function merrweb_api_api_key_render(  ) {
 
 }
 
+// ----------------------------------------------------------------------------- 
+
 
 function merrweb_api_settings_section_callback(  ) { 
 
 	echo __( 'Enter your API keys', 'merrweb-api' );
 
 }
+
+// ----------------------------------------------------------------------------- 
 
 
 function merrweb_api_options_page(  ) { 
@@ -116,14 +134,13 @@ function merrweb_api_options_page(  ) {
     
 }	
 
-
-    // -----------------------------------------------------------------------------	
+// -----------------------------------------------------------------------------	
     		
     function methods() {
         
     }
     
-    // ----------------------------------------------------------------------------- 
+// ----------------------------------------------------------------------------- 
     
     function search() {
         
@@ -138,7 +155,7 @@ function merrweb_api_options_page(  ) {
  
     }
     
-    // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
     
     function endpoint($q) {
 	    
@@ -149,7 +166,7 @@ function merrweb_api_options_page(  ) {
 	    return $str;
     }
     
-    // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
     
     function app() {
         
@@ -163,7 +180,8 @@ function merrweb_api_options_page(  ) {
             'q' => '',
             'action' => 'search',
             'per_page' => 25,
-            'page' => 1
+            'page' => 1,
+            'slug' => $this->slug
         );
 
         $html = '';
@@ -186,18 +204,21 @@ function merrweb_api_options_page(  ) {
 			wp_enqueue_script('merrweb-api-chunk-vendors');
 			wp_enqueue_script('merrweb-api-app');
 						
-            
-             $html.='
-             <noscript>You will need to enable scripting for the short code to work</noscript>
-             <div id="app"></div>';
-            
+
         }
         
         
         
+                    
+        $html.='
+             <noscript>You will need to enable scripting for the short code to work</noscript>
+             <div id="app"></div>';
+
         return $html;
         
     }
+    
+ // ----------------------------------------------------------------------------- 
 
 
 } // End class
@@ -209,6 +230,7 @@ add_action( 'admin_init', [$MerrWebAPI,'merrweb_api_settings_init'] );
 add_action("wp_ajax_search", [$MerrWebAPI,'search']);
 add_action("wp_ajax_nopriv_search", [$MerrWebAPI,'search']);
 add_shortcode('merrweb-spanish',[$MerrWebAPI,'app']);
+add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebAPI,'merrweb_api_add_settings_link'] );
 
    
 

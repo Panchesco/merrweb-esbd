@@ -1,6 +1,6 @@
 <template>
 	<ul>
-		<li v-for="(v,key) in item.shortdef" :key="key">{{v}}</li>
+		<li v-for="(v,index) in item.shortdef" :key="index">{{v}}</li>
 	</ul>
 </template>
 <script>

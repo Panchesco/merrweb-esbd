@@ -34,7 +34,12 @@ define('MERRWEBAPI_ENV','development');
 
 class MerrWebAPI {
     
-    var $options;
+    var $options = array(	'api_key' => '',
+    						'placeholder' => '',
+    						'loadingId' => 'loading-status',
+    						'loadingClass' => 'loading',
+    						'resultsMsg' => 'We found these results:',
+    						'noResultsMsg' => 'Nothing found for %s. Some suggestions:');
     var $version = '1.0.0';
     var $location = 'http://localhost:4000/';
     var $enpoint;
@@ -43,7 +48,13 @@ class MerrWebAPI {
     
     function __construct() {
         
-        $this->options = get_option('merrweb_api_settings');
+        $settings = get_option('merrweb_api_settings');
+        
+        if( $settings !== false ) {
+        	foreach( $settings as $key => $option ) {
+	        	$this->options[$key] = $option; 
+        	}
+        }
         
         if( isset($_REQUEST['q']) ) {
             $this->q = sanitize_text_field($_REQUEST['q']);
@@ -87,6 +98,46 @@ function merrweb_api_settings_init(  ) {
 		'merrweb-api', 
 		'merrweb_api_section' 
 	);
+	
+	add_settings_field( 
+		'merrweb_api[placeholder]', 
+		__( 'Search Input Placeholder Text', 'merrweb-api' ), 
+		[$this,'merrweb_api_placeholder_render'], 
+		'merrweb-api', 
+		'merrweb_api_section' 
+	);
+	
+	add_settings_field( 
+		'merrweb_api[loadingId]', 
+		__( 'Loading Element ID', 'merrweb-api' ), 
+		[$this,'merrweb_api_loadingId_render'], 
+		'merrweb-api', 
+		'merrweb_api_section' 
+	);
+	
+	add_settings_field( 
+		'merrweb_api[loadingClass]', 
+		__( 'Loading Element Class', 'merrweb-api' ), 
+		[$this,'merrweb_api_loadingClass_render'], 
+		'merrweb-api', 
+		'merrweb_api_section' 
+	);
+	
+	add_settings_field( 
+		'merrweb_api[resultsMsg]', 
+		__( 'Results message', 'merrweb-api' ), 
+		[$this,'merrweb_api_resultsMsg_render'], 
+		'merrweb-api', 
+		'merrweb_api_section' 
+	);
+	
+	add_settings_field( 
+		'merrweb_api[noResultsMsg]', 
+		__( 'No results message', 'merrweb-api' ), 
+		[$this,'merrweb_api_noResultsMsg_render'], 
+		'merrweb-api', 
+		'merrweb_api_section' 
+	);
 
 }
 
@@ -102,6 +153,58 @@ function merrweb_api_api_key_render(  ) {
 }
 
 // ----------------------------------------------------------------------------- 
+
+function merrweb_api_placeholder_render(  ) { 
+
+	?>
+	<input type='text' name='merrweb_api_settings[placeholder]' value='<?php echo $this->options['placeholder']; ?>'>
+	<?php
+
+}
+
+// ----------------------------------------------------------------------------- 
+
+function merrweb_api_loadingId_render(  ) { 
+
+	?>
+	<input type='text' name='merrweb_api_settings[loadingId]' value='<?php echo $this->options['loadingId']; ?>'>
+	<?php
+
+}
+
+// ----------------------------------------------------------------------------- 
+
+
+function merrweb_api_loadingClass_render(  ) { 
+
+	?>
+	<input type='text' name='merrweb_api_settings[loadingClass]' value='<?php echo $this->options['loadingClass']; ?>'>
+	<?php
+
+}
+
+// ----------------------------------------------------------------------------- 
+
+
+function merrweb_api_noResultsMsg_render(  ) { 
+
+	?>
+	<textarea name='merrweb_api_settings[noResultsMsg]'><?php echo $this->options['noResultsMsg']; ?></textarea>
+	<?php
+
+}
+
+// ----------------------------------------------------------------------------- 
+
+function merrweb_api_resultsMsg_render(  ) { 
+
+	?>
+	<textarea name='merrweb_api_settings[resultsMsg]'><?php echo $this->options['resultsMsg']; ?></textarea>
+	<?php
+
+}
+
+// -----------------------------------------------------------------------------
 
 
 function merrweb_api_settings_section_callback(  ) { 
@@ -179,9 +282,11 @@ function merrweb_api_options_page(  ) {
             'per_page' => 25,
             'page' => 1,
             'slug' => $this->slug,
-            'loadingId' => 'loading-status',
-            'loadingClass' => 'loading',
-            'noResultsMsg' => __('No results found for %s. Some suggestions:')
+            'loadingId' => $this->options['loadingId'],
+            'loadingClass' => $this->options['loadingClass'],
+            'noResultsMsg' => __($this->options['noResultsMsg']),
+            'resultsMsg' => __($this->options['resultsMsg']),
+            'placeholder' => __($this->options['placeholder'])
         );
 
         $html = '';
@@ -203,7 +308,6 @@ function merrweb_api_options_page(  ) {
 			wp_register_script('merrweb-api-app', $this->location . '/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
 			wp_enqueue_script('merrweb-api-chunk-vendors');
 			wp_enqueue_script('merrweb-api-app');
-						
 
         }
 

@@ -29,7 +29,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Invalid request.' );
 }
 
-define('MERRWEBAPI_ENV','development');
+define('MERRWEBAPI_ENV','production');
 
 
 class MerrWebAPI {
@@ -313,35 +313,21 @@ function merrweb_api_options_page(  ) {
 
              
         if( MERRWEBAPI_ENV == 'production') {
+	        
+	        
+	         wp_register_style('merrweb-api-css', plugins_url() . '/merrweb-api/vue/dist/css/app.css',[],$this->version,false);
+	         wp_enqueue_style('merrweb-api-css');
+
 			// Localize data we'll use in the app.
             wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
             wp_localize_script('merrweb-api-data','merrweb_api',$data);
             wp_enqueue_script('merrweb-api-data');
             
             // Call the scripts used by Vue
-            wp_register_script('merrweb-api-chunk-vendors', plugins_url() . '/merrweb-api/vue/dist/js/chunk-vendors.3d48aca3.js',['merrweb-api-data'],$this->version,true);
-			wp_register_script('merrweb-api-app', plugins_url() . '/merrweb-api/vue/dist/js/app.e218a4ab.js',['merrweb-api-chunk-vendors'],$this->version,true);
+            wp_register_script('merrweb-api-chunk-vendors', plugins_url() . '/merrweb-api/vue/dist/js/chunk-vendors.js',['merrweb-api-data'],$this->version,true);
+			wp_register_script('merrweb-api-app', plugins_url() . '/merrweb-api/vue/dist/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
 			wp_enqueue_script('merrweb-api-chunk-vendors');
 			wp_enqueue_script('merrweb-api-app');
-			
-			$html.= '
-			    <link href="/wp-content/plugins/merrweb-api/vue/dist/css/app.0b0a473d.css" rel=preload as=style>
-				<link href="/wp-content/plugins/merrweb-api/vue/dist/js/app.e218a4ab.js" rel=preload as=script>
-				<link href="/wp-content/plugins/merrweb-api/vue/dist/js/chunk-vendors.3d48aca3.js" rel=preload as=script>
-				<link href="/wp-content/plugins/merrweb-api/vue/dist/css/app.0b0a473d.css" rel=stylesheet>
-				<link rel=icon type=image/png sizes=32x32 href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/favicon-32x32.png">
-				<link rel=icon type=image/png sizes=16x16 href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/favicon-16x16.png">
-				<link rel=manifest href="/wp-content/plugins/merrweb-api/vue/dist/manifest.json">
-				<meta name=theme-color content=#4DBA87>
-				<meta name=apple-mobile-web-app-capable content=no>
-				<meta name=apple-mobile-web-app-status-bar-style content=default>
-				<meta name=apple-mobile-web-app-title content=vue>
-				<link rel=apple-touch-icon href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/apple-touch-icon-152x152.png">
-				<link rel=mask-icon href="/wp-content/plugins/merrweb-api/vue/dist/img/icons/safari-pinned-tab.svg" color=#4DBA87>
-				<meta name=msapplication-TileImage content="/wp-content/plugins/merrweb-api/vue/dist/img/icons/msapplication-icon-144x144.png">
-				<meta name=msapplication-TileColor content=#000000>
-			';
-			
 			
         }    
         

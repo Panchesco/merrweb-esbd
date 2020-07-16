@@ -1,11 +1,7 @@
 module.exports = {
-	publicPath:"http://localhost:4000/",
-	configureWebpack: {
-    	devtool: 'source-map',
-  },
-  filenameHashing: false,
+	publicPath:"/wp-content/plugins/merrweb-esbd/dist/",
+	filenameHashing: false,
 }
-
 
 /*
 	#####################################################################

@@ -314,16 +314,16 @@ function merrweb_api_options_page(  ) {
              
         if( MERRWEBAPI_ENV == 'production') {
 	        
-	        
-	         wp_register_style('merrweb-api-css', plugins_url() . '/merrweb-api/vue/dist/css/app.css',[],$this->version,false);
-	         wp_enqueue_style('merrweb-api-css');
+	        // Register and enqueue styles.
+	        wp_register_style('merrweb-api-css', plugins_url() . '/merrweb-api/vue/dist/css/app.css',[],$this->version,false);
+	        wp_enqueue_style('merrweb-api-css');
 
 			// Localize data we'll use in the app.
             wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
             wp_localize_script('merrweb-api-data','merrweb_api',$data);
             wp_enqueue_script('merrweb-api-data');
             
-            // Call the scripts used by Vue
+            // Register and enqueue the scripts used by Vue.
             wp_register_script('merrweb-api-chunk-vendors', plugins_url() . '/merrweb-api/vue/dist/js/chunk-vendors.js',['merrweb-api-data'],$this->version,true);
 			wp_register_script('merrweb-api-app', plugins_url() . '/merrweb-api/vue/dist/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
 			wp_enqueue_script('merrweb-api-chunk-vendors');
@@ -332,12 +332,10 @@ function merrweb_api_options_page(  ) {
         }    
         
         $html.='
-        
-
              <noscript>You will need to enable scripting for the short code to work</noscript>
-             <div id="app"></div>';
-             
-
+             <div id="app"></div>
+            ';
+            
         return $html;
         
     }
@@ -348,13 +346,13 @@ function merrweb_api_options_page(  ) {
 } // End class
 
 $MerrWebAPI = new MerrWebAPI();
-
+add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebAPI,'merrweb_api_add_settings_link'] );
 add_action( 'admin_menu', [$MerrWebAPI,'merrweb_api_add_admin_menu'] );
 add_action( 'admin_init', [$MerrWebAPI,'merrweb_api_settings_init'] );
 add_action("wp_ajax_search", [$MerrWebAPI,'search']);
 add_action("wp_ajax_nopriv_search", [$MerrWebAPI,'search']);
 add_shortcode('merrweb-spanish',[$MerrWebAPI,'app']);
-add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebAPI,'merrweb_api_add_settings_link'] );
+
 
    
 

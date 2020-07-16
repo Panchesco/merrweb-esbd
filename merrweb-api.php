@@ -29,9 +29,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 	die( 'Invalid request.' );
 }
 
-define('MERRWEBAPI_ENV','production');
-
-
 class MerrWebAPI {
     
     var $options = array(	'api_key' => '',
@@ -41,23 +38,35 @@ class MerrWebAPI {
     						'resultsMsg' => 'We found these results:',
     						'noResultsMsg' => 'Nothing found for %s. Some suggestions:');
     var $version = '1.0.0';
-    var $location = 'http://localhost:4000/';
+    var $dist_url = 'http://localhost:4000'; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $enpoint;
     var $q;
     var $slug = 'merrweb-api';
+    var $nonce;
     
     function __construct() {
-        
-        $settings = get_option('merrweb_api_settings');
+	    
+	    $this->version = time();
+	    
+	    // If $this->dist_url is null, we're in production
+	    if( $this->dist_url == null ) {
+	    	$this->dist_url = plugins_url() . '/merrweb-api/vue/dist'; // Production
+	    } 
+	    	        
+		$settings = get_option('merrweb_api_settings');
         
         if( $settings !== false ) {
         	foreach( $settings as $key => $option ) {
 	        	$this->options[$key] = $option; 
         	}
         }
-        
+
         if( isset($_REQUEST['q']) ) {
             $this->q = sanitize_text_field($_REQUEST['q']);
+        }
+        
+        if( isset($_REQUEST['_wpnonce']) ) {
+        	$this->nonce = sanitize_text_field($_REQUEST['_wpnonce']);
         }
 
     }
@@ -70,12 +79,29 @@ function merrweb_api_add_admin_menu(  ) {
 
 // ----------------------------------------------------------------------------- 
 
-function merrweb_api_add_settings_link( $links ) {
+	function does_url_exist($url) {
+	    $ch = curl_init($url);
+	    curl_setopt($ch, CURLOPT_NOBODY, true);
+	    curl_exec($ch);
+	    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 	
-    $settings_link = '<a href="options-general.php?page=merrweb-api">' . __( 'Settings' ) . '</a>';
-    array_push( $links, $settings_link );
-  	return $links;
-}
+	    if ($code == 200) {
+	        $status = true;
+	    } else {
+	        $status = false;
+	    }
+	    curl_close($ch);
+	    return $status;
+	}
+
+// ----------------------------------------------------------------------------- 
+
+	function merrweb_api_add_settings_link( $links ) {
+		
+	    $settings_link = '<a href="options-general.php?page=merrweb-api">' . __( 'Settings' ) . '</a>';
+	    array_push( $links, $settings_link );
+	  	return $links;
+	}
 
 // ----------------------------------------------------------------------------- 
 
@@ -244,10 +270,20 @@ function merrweb_api_options_page(  ) {
     
     function search() {
         
-        // Check nonce
+        // Verify nonce.
+        if( wp_verify_nonce($this->nonce,'merrweb_api') === false) {
+	        
+	        
+	        	$data = array(	'error' => 'error',
+	        				'error_description' => __('The submitted form is not valid or has expired. Please reload this page and try again.'));
+	        				
+				$response = json_encode($data);
+        
+        	} else {
              
-        $this->endpoint = $this->endpoint($this->q);
-        $response = file_get_contents($this->endpoint);
+				$this->endpoint = $this->endpoint($this->q);
+				$response = file_get_contents($this->endpoint);
+			}
         
         print $response;
         
@@ -272,6 +308,8 @@ function merrweb_api_options_page(  ) {
         
         global $post;
         
+        $html = '';
+        
         $data = array(
 	        'url' => site_url() . '/wp-admin/admin-ajax.php',
 	        'headers' => "'Accept' : 'application:json',
@@ -289,47 +327,27 @@ function merrweb_api_options_page(  ) {
             'placeholder' => __($this->options['placeholder'])
         );
 
-        $html = '';
-        
         if( ! has_shortcode( $post->post_content, 'merrweb-spanish') ) {
             return;
         }
         
-        if(MERRWEBAPI_ENV == 'development') {
-	        
+	    // If this is a production distribution, register and enqueue styles.
+		if( $this->does_url_exist( $this->dist_url . '/css/app.css',FALSE, NULL, 0, 1 ) ) {
+	     wp_register_style('merrweb-api-css', $this->dist_url . '/css/app.css',[],$this->version,false);
+		 wp_enqueue_style('merrweb-api-css');
+		}
 
-            // Localize data we'll use in the app.
-            wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
-            wp_localize_script('merrweb-api-data','merrweb_api',$data);
-            wp_enqueue_script('merrweb-api-data');
-            
-            // Call the scripts used by Vue
-            wp_register_script('merrweb-api-chunk-vendors', $this->location . '/js/chunk-vendors.js',['merrweb-api-data'],$this->version,true);
-			wp_register_script('merrweb-api-app', $this->location . '/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
-			wp_enqueue_script('merrweb-api-chunk-vendors');
-			wp_enqueue_script('merrweb-api-app');
-
-        }
-
-             
-        if( MERRWEBAPI_ENV == 'production') {
-	        
-	        // Register and enqueue styles.
-	        wp_register_style('merrweb-api-css', plugins_url() . '/merrweb-api/vue/dist/css/app.css',[],$this->version,false);
-	        wp_enqueue_style('merrweb-api-css');
-
-			// Localize data we'll use in the app.
-            wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
-            wp_localize_script('merrweb-api-data','merrweb_api',$data);
-            wp_enqueue_script('merrweb-api-data');
-            
-            // Register and enqueue the scripts used by Vue.
-            wp_register_script('merrweb-api-chunk-vendors', plugins_url() . '/merrweb-api/vue/dist/js/chunk-vendors.js',['merrweb-api-data'],$this->version,true);
-			wp_register_script('merrweb-api-app', plugins_url() . '/merrweb-api/vue/dist/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
-			wp_enqueue_script('merrweb-api-chunk-vendors');
-			wp_enqueue_script('merrweb-api-app');
-			
-        }    
+        // Localize data we'll use in the app.
+        wp_register_script('merrweb-api-data', plugins_url() . '/merrweb-api/js/index.js',[],$this->version,false);
+        wp_localize_script('merrweb-api-data','merrweb_api',$data);
+        wp_enqueue_script('merrweb-api-data');
+        
+        // Call the scripts used by Vue
+        wp_register_script('merrweb-api-chunk-vendors', $this->dist_url . '/js/chunk-vendors.js',['merrweb-api-data'],$this->version,true);
+		wp_register_script('merrweb-api-app', $this->dist_url . '/js/app.js',['merrweb-api-chunk-vendors'],$this->version,true);
+		wp_enqueue_script('merrweb-api-chunk-vendors');
+		wp_enqueue_script('merrweb-api-app');
+   
         
         $html.='
              <noscript>You will need to enable scripting for the short code to work</noscript>

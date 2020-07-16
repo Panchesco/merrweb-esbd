@@ -23,6 +23,7 @@
 			<li v-for="(item,key) in suggestions" :key="key"><a href="#" @click="suggestion(item)">{{item}}</a></li>
 		</ul>
 	</ul>
+	<p v-if="errorDesc!=null">{{errorDesc}}</p>
 		<!-- AJAX Spinner -->
 		<div :id="loadingId" :class="isLoading" @click="clearLoading()">
 	    	<div class="status">	
@@ -67,7 +68,8 @@ export default  {
 			total_results: 0,
 			item: {},
 			showSuggs: false,
-			showResults: "hide"
+			showResults: "hide",
+			errorDesc: null,
         }
     },
     methods: {
@@ -100,6 +102,7 @@ export default  {
             this.data = []
             this.suggestions = []
             this.showSuggs = false
+            this.errorDesc = null;
             
             var formData = new FormData();
             formData.append('_wpnonce',this.appdata._wpnonce)
@@ -110,13 +113,12 @@ export default  {
 			.then( ( response ) => {
 				
 					this.$appdata.q = this.appdata.q
-					
-					
+
 					this.isLoading = "";
 					
 					this.showResults = "show"
 					
-					if(response.data[0].meta!=undefined) {
+					if(response.data.error == undefined && response.data[0].meta!=undefined) {
 
 						for( var i in response.data ) {
 							if ( response.data[i].shortdef.length > 0 ) {
@@ -125,6 +127,11 @@ export default  {
 									this.total_results++
 							}
 						}
+						
+					} else if( response.data.error == 'error' ) {
+						
+						this.total_results = 0;
+						this.errorDesc = response.data.error_description
 						
 					} else if( response.data.length!=0) {
 						this.suggestions = response.data

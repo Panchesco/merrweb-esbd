@@ -129,7 +129,7 @@ function merrweb_esbd_settings_init(  ) {
 	
 	add_settings_section(
 		'merrweb_esbd_shortcode_section', 
-		__( 'Shortcode Rendering Options', 'merrweb-esbd' ), 
+		__( 'Shortcode Options', 'merrweb-esbd' ), 
 		[$this,'merrweb_esbd_shortcode_section_callback'], 
 		'merrweb-esbd'
 	);
@@ -278,7 +278,7 @@ function merrweb_esbd_settings_section_callback(  ) {
 
 function merrweb_esbd_shortcode_section_callback(  ) { 
 
-	echo __( 'Customize form elements and messaging.', 'merrweb-esbd' );
+	echo __( 'Customize rendered form elements and messaging.', 'merrweb-esbd' );
 
 }
 

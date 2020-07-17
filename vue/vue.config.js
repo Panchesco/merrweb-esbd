@@ -1,5 +1,5 @@
 module.exports = {
-	publicPath:"/wp-content/plugins/merrweb-esbd/dist/",
+	publicPath:"http://localhost:4000",
 	filenameHashing: false,
 }
 

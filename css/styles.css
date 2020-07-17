@@ -1,0 +1,24 @@
+.merrweb-esbd-branding {
+	height: auto;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	background: #778f9c;
+	padding: .4em;
+	color: #fff;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+.merrweb-esbd-branding a {
+	color: #AFCCD8;
+}
+
+.merrweb-esbd-branding div {
+	padding: .2em .2em .2em 0;
+}
+
+
+.merrweb-esbd-branding img {
+		height: 50px;
+		width: auto;
+}

@@ -5,9 +5,9 @@
  * @package           merrweb-esbd
  *
  * @wordpress-plugin
- * Plugin Name:       Merriam-Webster Bilingual Dictionary
+ * Plugin Name:       Spanish-English Dictionary
  * Plugin URI:        https://github.com/panchesco/merrweb-esbd.git
- * Description:       A shortcode for dropping a bilingual English/Spanish dictionary into a post or page.
+ * Description:       A shortcode for dropping a bilingual Spanish-English dictionary into a post or page.
  * Version:           1.0.0
  * Author:            Richard Whitmer
  * Author URI:        https://github.com/panchesco
@@ -23,13 +23,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
-    var $dist_url; // Set this to dev server URL if in development; otherwise, leave it blank.
+    var $dist_url = 'http://localhost:4000'; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
     						'loadingId' => 'loading-status',
     						'loadingClass' => 'loading',
-    						'resultsMsg' => 'We found %d results for %s.',
-    						'noResultsMsg' => 'Nothing found for %s. Some suggestions:');
+    						'resultsMsg' => 'We found %d definitions for %s.',
+    						'noResultsMsg' => 'Nothing found for %s. Some suggestions:',
+    						'btnTxt' => 'Define');
     var $version = '1.0.0';
     var $enpoint;
     var $q;
@@ -101,17 +102,26 @@ function merrweb_esbd_add_admin_menu(  ) {
 function merrweb_esbd_settings_init(  ) { 
 
 	register_setting( 'merrweb-esbd', 'merrweb_esbd_settings' );
-
-	add_settings_section(
-		'merrweb_esbd_section', 
-		__( 'Merriam-Webster API Key', 'merrweb-esbd' ), 
-		[$this,'merrweb_esbd_settings_section_callback'], 
+	
+			add_settings_section(
+		'merrweb_esbd_branding_section', 
+		'', 
+		[$this,'merrweb_esbd_branding_section_callback'], 
 		'merrweb-esbd'
 	);
 
+	add_settings_section(
+		'merrweb_esbd_section', 
+		__( 'API Key Required', 'merrweb-esbd' ), 
+		[$this,'merrweb_esbd_settings_section_callback'], 
+		'merrweb-esbd'
+	);
+	
+
+
 	add_settings_field( 
 		'merrweb_esbd[api_key]', 
-		__( 'API Key', 'merrweb-esbd' ), 
+		__( 'Spanish-English  Dictionary API Key', 'merrweb-esbd' ), 
 		[$this,'merrweb_esbd_api_key_render'], 
 		'merrweb-esbd', 
 		'merrweb_esbd_section' 
@@ -128,6 +138,14 @@ function merrweb_esbd_settings_init(  ) {
 		'merrweb_esbd[placeholder]', 
 		__( 'Search Input Placeholder Text', 'merrweb-esbd' ), 
 		[$this,'merrweb_esbd_placeholder_render'], 
+		'merrweb-esbd', 
+		'merrweb_esbd_shortcode_section' 
+	);
+	
+	add_settings_field( 
+		'merrweb_esbd[btnTxt]', 
+		__( 'Button Text', 'merrweb-esbd' ), 
+		[$this,'merrweb_esbd_btnTxt_render'], 
 		'merrweb-esbd', 
 		'merrweb_esbd_shortcode_section' 
 	);
@@ -163,6 +181,8 @@ function merrweb_esbd_settings_init(  ) {
 		'merrweb-esbd', 
 		'merrweb_esbd_shortcode_section' 
 	);
+	
+
 
 }
 
@@ -170,11 +190,9 @@ function merrweb_esbd_settings_init(  ) {
 
 
 function merrweb_esbd_api_key_render(  ) { 
-
 	?>
-	<input type='text' name='merrweb_esbd_settings[api_key]' value='<?php echo $this->options['api_key']; ?>'>
+	<input type='text' name='merrweb_esbd_settings[api_key]' value='<?php echo $this->options['api_key']; ?>'><hr>
 	<?php
-
 }
 
 // ----------------------------------------------------------------------------- 
@@ -183,6 +201,16 @@ function merrweb_esbd_placeholder_render(  ) {
 
 	?>
 	<input type='text' name='merrweb_esbd_settings[placeholder]' value='<?php echo $this->options['placeholder']; ?>'>
+	<?php
+
+}
+
+// ----------------------------------------------------------------------------- 
+
+function merrweb_esbd_btnTxt_render(  ) { 
+
+	?>
+	<input type='text' name='merrweb_esbd_settings[btnTxt]' value='<?php echo $this->options['btnTxt']; ?>'>
 	<?php
 
 }
@@ -234,7 +262,14 @@ function merrweb_esbd_resultsMsg_render(  ) {
 
 function merrweb_esbd_settings_section_callback(  ) { 
 
-	echo __( 'Enter your API keys', 'merrweb-esbd' );
+
+	$html= '<p>To use this plugin, you\'ll need an API key for the Merriam-Webster\'s Spanish-English Dictionary API.<br>
+	If you don\'t already have one, you can create a free account in the <a href="https://www.dictionaryapi.com/register/index">Merriam-Webster Developer Center.</a><br>Request a key for the Spanish-English Dictionary.
+	Once you receive the key, return to this page and add it here.</p>';
+	
+
+	
+	echo $html;
 
 }
 
@@ -243,26 +278,40 @@ function merrweb_esbd_settings_section_callback(  ) {
 
 function merrweb_esbd_shortcode_section_callback(  ) { 
 
-	echo __( 'Enter your API keys', 'merrweb-esbd' );
+	echo __( 'Customize form elements and messaging.', 'merrweb-esbd' );
 
 }
 
 // ----------------------------------------------------------------------------- 
 
+function merrweb_esbd_branding_section_callback() {
+	?>
+	<div class="merrweb-esbd-branding">
+				<div>
+				<a href="https://www.merriam-webster.com/"><img src="<?php echo plugins_url(); ?>/merrweb-esbd/images/MWLogo.png" alt="Merriam-Webster" style="Courtesy Merriam-Webster Inc." /></a>
+				</div>
+				<div>
+				API Courtesy <a href="https://www.merriam-webster.com/">Merriam-Webster Inc.</a>
+				</div>
+	</div>
+	<?php
+}
+
+// -----------------------------------------------------------------------------  
 
 function merrweb_esbd_options_page(  ) { 
 
 		?>
 		<form action='options.php' method='post'>
 
-			<h2>Merriam-Webster API</h2>
+			<h2>Spanish-English Dictionary</h2>
 
 			<?php
 			settings_fields( 'merrweb-esbd' );
 			do_settings_sections( 'merrweb-esbd' );
 			submit_button();
 			?>
-
+			
 		</form>
 		<?php
     
@@ -324,7 +373,11 @@ function merrweb_esbd_options_page(  ) {
             'loadingClass' => $this->options['loadingClass'],
             'noResultsMsg' => __($this->options['noResultsMsg']),
             'resultsMsg' => __($this->options['resultsMsg']),
-            'placeholder' => __($this->options['placeholder'])
+            'placeholder' => __($this->options['placeholder']),
+            'logoSrc' => plugins_url() . '/merrweb-esbd/images/MWLogo.png',
+            'logoAlt' => 'Merriam-Webster',
+            'logoHref' => 'https://www.merriam-webster.com/',
+            'btnTxt' => __($this->options['btnTxt'])
         );
 
         if( ! has_shortcode( $post->post_content, 'merrweb-bilingual-dictionary') ) {
@@ -358,6 +411,14 @@ function merrweb_esbd_options_page(  ) {
     }
     
  // ----------------------------------------------------------------------------- 
+ 
+ function admin_styles() {
+	 
+	 if( is_admin() && $_GET['page'] == 'merrweb-esbd') {
+		 wp_register_style('merrweb-esbd-admin-css', plugins_url() . '/merrweb-esbd/css/styles.css',[],$this->version);
+		 wp_enqueue_style('merrweb-esbd-admin-css');
+	 }
+ }
 
 
 } // End class
@@ -366,6 +427,7 @@ $MerrWebEsbd = new MerrWebEsbd();
 add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebEsbd,'merrweb_esbd_add_settings_link'] );
 add_action( 'admin_menu', [$MerrWebEsbd,'merrweb_esbd_add_admin_menu'] );
 add_action( 'admin_init', [$MerrWebEsbd,'merrweb_esbd_settings_init'] );
+add_action( 'admin_enqueue_scripts', [$MerrWebEsbd,'admin_styles'] );
 add_action("wp_ajax_search", [$MerrWebEsbd,'search']);
 add_action("wp_ajax_nopriv_search", [$MerrWebEsbd,'search']);
 add_shortcode('merrweb-bilingual-dictionary',[$MerrWebEsbd,'app']);

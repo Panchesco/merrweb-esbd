@@ -4,8 +4,8 @@
 		<div class="form-group">
 			<input v-model="appdata._wpnonce" type="hidden" />
 			<input class="form-control" :placeholder="placeholder" type="text" name="q" id="q" v-model="appdata.q" v-on:input="clearResults()" />
-			<button :class="btnClass" type="submit" disabled v-if="appdata.q.length < 2">Search</button>  
-			<button :class="btnClass" type="submit" @click="searchQuery" v-if="appdata.q.length > 1">Search</button>  
+			<button :class="btnClass" type="submit" disabled v-if="appdata.q.length < 2">{{bntTxt}}</button>  
+			<button :class="btnClass" type="submit" @click="searchQuery" v-if="appdata.q.length > 1">{{bntTxt}}</button>  
 		</div>   
     </form>
 	<hr v-if="isLoading==null">
@@ -23,6 +23,12 @@
 			<li v-for="(item,key) in suggestions" :key="key"><a href="#" @click="suggestion(item)">{{item}}</a></li>
 		</ul>
 	</ul>
+	<div :class="showResults">
+		<div class="branding">
+	    	<div><a :href="logoHref"><img :src="logoSrc" :alt="logoAlt"></a></div>
+	    	<div>Results courtesy <a :href="logoHref">Merriam-Webster Inc.</a></div>
+		</div>
+    </div>
 	<p v-if="errorDesc!=null">{{errorDesc}}</p>
 		<!-- AJAX Spinner -->
 		<div :id="loadingId" :class="isLoading" @click="clearLoading()">
@@ -61,6 +67,7 @@ export default  {
             noResultsMsg: this.$appdata.noResultsMsg,
             resultsMsg: this.$appdata.resultsMsg,
             resultsMsgTxt: "",
+            bntTxt: this.$appdata.btnTxt,
             btnClass: "btn btn-primary",
 			appdata: this.$appdata,
 			data: [],
@@ -70,6 +77,10 @@ export default  {
 			showSuggs: false,
 			showResults: "hide",
 			errorDesc: null,
+			logoSrc: this.$appdata.logoSrc,
+			logoAlt: this.$appdata.logoAlt,
+			logoHref: this.$appdata.logoHref
+			
         }
     },
     methods: {
@@ -103,6 +114,7 @@ export default  {
             this.suggestions = []
             this.showSuggs = false
             this.errorDesc = null;
+            this.showResults = "hide"
             
             var formData = new FormData();
             formData.append('_wpnonce',this.appdata._wpnonce)
@@ -147,6 +159,8 @@ export default  {
             
         },
         suggestion(item) {
+	        
+	        this.showResults = "hide"
 	        this.suggestions = []
 	        this.appdata.q = item
 	        this.searchQuery()
@@ -163,8 +177,6 @@ export default  {
 
 </script>
 <style>
-
-
 
 #loading-status.loading{
 	position: absolute;
@@ -192,13 +204,48 @@ span.search-query {
 }
 
 #loading-status.loading .status{
-
 	display: inherit;
-	
 }
 
 .hide {
 	display: none;
+}
+
+#merrweb-api {
+	display: block;
+	display: flex;
+	align-items: center;
+}
+
+#merrweb-api div {
+	padding: .2em .2em .2em .2em;
+}
+
+.branding {
+	font-size: .9rem;
+	height: auto;
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+	background: #778f9c;
+	padding: .4em;
+	color: #fff;
+	font-family: BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
+.branding a {
+	color: #AFCCD8;
+	text-decoration: none;
+}
+
+.branding div {
+	padding: .2em .2em .2em 0;
+}
+
+
+.branding img {
+		height: 50px;
+		width: auto;
 }
 
 .lds-spinner {

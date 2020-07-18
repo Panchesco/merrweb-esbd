@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/wp-content/plugins/merrweb-esbd/dist/precache-manifest.f3217936b8a5cb986467b8ba4ea10dca.js"
+  "/precache-manifest.e9f9410eb8d000fffd7a06c072192ef3.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "vue"});

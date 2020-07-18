@@ -5,11 +5,8 @@ import router from './router'
 import store from './store'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
-//import Buefy from 'buefy'
 import './assets/scss/app.scss'
 
-//Vue.use(Buefy,{})
- 
 Vue.use(VueAxios, axios)
 
 Vue.prototype.$appdata = window.merrweb_esbd // Pass appdata from localized merrweb_esbd variable as a Vue.prototype definition.

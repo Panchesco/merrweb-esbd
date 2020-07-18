@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
-    var $dist_url = 'http://localhost:4000'; // Set this to dev server URL if in development; otherwise, leave it blank.
+    var $dist_url; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
     						'loadingId' => 'loading-status',
@@ -377,7 +377,8 @@ function merrweb_esbd_options_page(  ) {
             'logoSrc' => plugins_url() . '/merrweb-esbd/images/MWLogo.png',
             'logoAlt' => 'Merriam-Webster',
             'logoHref' => 'https://www.merriam-webster.com/',
-            'btnTxt' => __($this->options['btnTxt'])
+            'btnTxt' => __($this->options['btnTxt']),
+            'dist' => plugins_url() . 'whatever'
         );
 
         if( ! has_shortcode( $post->post_content, 'merrweb-bilingual-dictionary') ) {

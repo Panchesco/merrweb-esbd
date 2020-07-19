@@ -130,7 +130,13 @@ export default  {
 					
 					this.showResults = "show"
 					
-					if(response.data.error == undefined && response.data[0].meta!=undefined) {
+					if( Array.isArray(response.data) === false) {
+    					
+    					this.isLoading = "";
+    					this.total_results = 0;
+    					this.errorDesc = response.data
+    					
+					} else if(response.data.error == undefined && response.data[0].meta!=undefined) {
 
 						for( var i in response.data ) {
 							if ( response.data[i].shortdef.length > 0 ) {

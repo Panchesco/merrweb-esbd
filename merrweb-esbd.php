@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       Spanish-English Dictionary
  * Plugin URI:        https://github.com/panchesco/merrweb-esbd.git
- * Description:       A shortcode for dropping a bilingual Spanish-English dictionary into a post or page.
+ * Description:       A shortcode for adding a bilingual Spanish-English dictionary to a post or page.
  * Version:           1.0.0
  * Author:            Richard Whitmer
  * Author URI:        https://github.com/panchesco
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
-    var $dist_url; // Set this to dev server URL if in development; otherwise, leave it blank.
+    var $dist_url = 'http://localhost:4000'; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
     						'loadingId' => 'loading-status',
@@ -333,6 +333,7 @@ function merrweb_esbd_options_page(  ) {
         	} else {
              
 				$this->endpoint = $this->endpoint($this->q);
+				
 				$response = file_get_contents($this->endpoint);
 			}
         
@@ -348,7 +349,7 @@ function merrweb_esbd_options_page(  ) {
 	    
 	    $str = 'https://www.dictionaryapi.com/api/v3/references/spanish/json/';
 	    $str .= $this->q;
-	    $str .= '?key=' . urlencode($this->options['api_key']);
+	    $str .= '?key=' . trim($this->options['api_key']);
 	    
 	    return $str;
     }
@@ -381,7 +382,7 @@ function merrweb_esbd_options_page(  ) {
             'dist' => plugins_url() . 'whatever'
         );
 
-        if( ! has_shortcode( $post->post_content, 'merrweb-bilingual-dictionary') ) {
+        if( ! has_shortcode( $post->post_content, 'merrweb-spanish-english') ) {
             return;
         }
         
@@ -431,7 +432,7 @@ add_action( 'admin_init', [$MerrWebEsbd,'merrweb_esbd_settings_init'] );
 add_action( 'admin_enqueue_scripts', [$MerrWebEsbd,'admin_styles'] );
 add_action("wp_ajax_search", [$MerrWebEsbd,'search']);
 add_action("wp_ajax_nopriv_search", [$MerrWebEsbd,'search']);
-add_shortcode('merrweb-bilingual-dictionary',[$MerrWebEsbd,'app']);
+add_shortcode('merrweb-spanish-english',[$MerrWebEsbd,'app']);
 
 
    

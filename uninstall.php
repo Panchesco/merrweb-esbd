@@ -9,10 +9,13 @@
  * @package    merrweb-esbd
  */
 
-// If uninstall not called from WordPress, then exit.
-if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+ // If uninstall not called from WordPress, then exit.
+ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 	exit;
-}
+ }
 
-	delete_option('merrweb_esbd');
+ function merrweb_esbed_uninstall() {
+		delete_option('merrweb_esbd_settings');
+ }
 	
+ merrweb_esbed_uninstall();

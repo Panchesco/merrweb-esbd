@@ -99,6 +99,15 @@ function merrweb_esbd_add_admin_menu(  ) {
 
 // ----------------------------------------------------------------------------- 
 
+	function merrweb_esbd_add_docs_link( $links ) {
+		
+	    $docs_link = '<a href="https://github.com/panchesco/merrweb-esbd.git" target="_blank">' . __( 'Docs' ) . '</a>';
+	    array_push( $links, $docs_link );
+	  	return $links;
+	}
+
+// ----------------------------------------------------------------------------- 
+
 
 function merrweb_esbd_settings_init(  ) { 
 
@@ -273,9 +282,8 @@ function merrweb_esbd_settings_section_callback(  ) {
 
 	$html= '<p>To use this plugin, you\'ll need an API key for the Merriam-Webster\'s Spanish-English Dictionary API.<br>
 	If you don\'t already have one, you can create a free account in the <a href="https://www.dictionaryapi.com/register/index">Merriam-Webster Developer Center.</a><br>Request a key for the Spanish-English Dictionary.
-	Once you receive the key, return to this page and add it here.</p>';
-	
-
+	Once you receive the key, return to this page and add it here.</p>
+	<p>Once you have added the API key, use the shortcode  <strong>[merrweb-spanish-english]</strong> in posts and pages to display the dictionary.';
 	
 	echo $html;
 
@@ -390,6 +398,7 @@ function merrweb_esbd_options_page(  ) {
             'btnTxt' => __($this->options['btnTxt']),
             'dist' => plugins_url() . 'whatever'
         );
+        
 
         if( ! has_shortcode( $post->post_content, 'merrweb-spanish-english') ) {
             return;
@@ -434,7 +443,9 @@ function merrweb_esbd_options_page(  ) {
 } // End class
 
 $MerrWebEsbd = new MerrWebEsbd();
+
 add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebEsbd,'merrweb_esbd_add_settings_link'] );
+add_filter( "plugin_action_links_" . plugin_basename(__FILE__), [$MerrWebEsbd,'merrweb_esbd_add_docs_link'] );
 add_action( 'admin_menu', [$MerrWebEsbd,'merrweb_esbd_add_admin_menu'] );
 add_action( 'admin_init', [$MerrWebEsbd,'merrweb_esbd_settings_init'] );
 add_action( 'admin_enqueue_scripts', [$MerrWebEsbd,'admin_styles'] );

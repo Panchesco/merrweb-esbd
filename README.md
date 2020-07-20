@@ -67,7 +67,7 @@ Results and suggestions render as unordered lists that should pick up your activ
 
 ### Suggestions
 
-When no results are found, the shortcode displays a list of clickable suggestions rendered as a list.
+When no results are found, the shortcode displays a list of clickable suggestions.
 
 #### Example 
 

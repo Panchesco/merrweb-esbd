@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
-    var $dist_url;// Set this to dev server URL if in development; otherwise, leave it blank.
+    var $dist_url; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
     						'loadingId' => 'loading-status',
@@ -222,7 +222,7 @@ function merrweb_esbd_btnTxt_render(  ) {
 function merrweb_esbd_loadingId_render(  ) { 
 
 	?>
-	<p>The loading element ID. The default page overlay ID is loading-status.</p>
+	<p>The loading element ID. The default page overlay ID is merrweb-esbd-loading-status.</p>
 	<input type='text' name='merrweb_esbd_settings[loadingId]' value='<?php echo $this->options['loadingId']; ?>'>
 	<?php
 
@@ -234,11 +234,12 @@ function merrweb_esbd_loadingId_render(  ) {
 function merrweb_esbd_loadingClass_render(  ) { 
 
 	?>
-	<p>The loading element class. The default page overly class is loading. The script will add this class to the overlay with the overlay ID while the results are being fetched from the API.</p>
+	<p>The loading element class name.</p>
 	<input type='text' name='merrweb_esbd_settings[loadingClass]' value='<?php echo $this->options['loadingClass']; ?>'>
 	<?php
 
 }
+
 
 // ----------------------------------------------------------------------------- 
 
@@ -377,7 +378,8 @@ function merrweb_esbd_options_page(  ) {
             'page' => 1,
             'slug' => $this->slug,
             'loadingId' => $this->options['loadingId'],
-            'loadingClass' => $this->options['loadingClass'],
+            'loadingClass' => ( $this->options['loadingClass'] == "" ) ? "mwesbd-loading" : $this->options['loadingClass'],
+            'isLoading' => "",
             'noResultsMsg' => __($this->options['noResultsMsg']),
             'resultsMsg' => __($this->options['resultsMsg']),
             'placeholder' => __($this->options['placeholder']),
@@ -411,9 +413,8 @@ function merrweb_esbd_options_page(  ) {
    
         $html.='
              <noscript>You will need to enable scripting for the short code to work</noscript>
-             <div id="app"></div>
-            ';
-            
+             <div id="app"></div>';
+             
         return $html;
         
     }

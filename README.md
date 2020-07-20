@@ -96,6 +96,18 @@ When no results are found, the shortcode displays a list of clickable suggestion
 </div>
 ```
 
+### Spinner
+
+The shortcode includes a default spinner that overlays the page while fetching results from the API. You can disable it by changing the loading element ID value in the plugin settings. It is visible if the 
+
+Additionally, whenever an AJAX request to the API is being made, the ```window.merrweb_esbd.isLoading``` property is set to the value of the Loading Element Class setting. 
+
+### Branding 
+
+Plugin results and suggestions display a footer with Merriam-Webster's required branding. See the [API FAQ](https://www.dictionaryapi.com/info/frequently-asked-questions) for more info.
+
+
+
 
 
 

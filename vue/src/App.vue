@@ -31,7 +31,7 @@
     </div>
 	<p v-if="errorDesc!=null">{{errorDesc}}</p>
 		<!-- AJAX Spinner -->
-		<div :id="loadingId" :class="isLoading" @click="clearLoading()">
+		<div :id="this.$appdata.loadingId" :class="this.$appdata.loadingClass" v-if="this.loadingClass==this.$appdata.isLoading" @click="clearLoading">
 	    	<div class="status">	
 				<div class="lds-spinner">
 					<div></div>
@@ -59,8 +59,9 @@ export default  {
 	},
     data() {
         return {
-            isLoading: "",
             isFullPage: true,
+            slug: this.$appdata.slug,
+            isLoading: this.$appdata.isLoading,
             loadingId: this.$appdata.loadingId,
 			placeholder: this.$appdata.placeholder,
             loadingClass: this.$appdata.loadingClass,
@@ -80,12 +81,11 @@ export default  {
 			logoSrc: this.$appdata.logoSrc,
 			logoAlt: this.$appdata.logoAlt,
 			logoHref: this.$appdata.logoHref
-			
         }
     },
     methods: {
 	    clearLoading(){
-			    return this.isLoading = ""   
+			    this.$appdata.isLoading = ""   
 	    },
 	    clearResults() {
 			this.showResults = "hide"
@@ -107,8 +107,8 @@ export default  {
         searchQuery() {
 	        
 	        event.preventDefault()
-	        
-            this.isLoading = this.loadingClass
+
+            this.$appdata.isLoading = this.loadingClass
             this.total_results = 0
             this.data = []
             this.suggestions = []
@@ -123,16 +123,15 @@ export default  {
             
     		this.$http.post(this.appdata.url,formData)
 			.then( ( response ) => {
+    			
+    			    this.$appdata.isLoading = "";
 				
 					this.$appdata.q = this.appdata.q
-
-					this.isLoading = "";
 					
 					this.showResults = "show"
 					
 					if( Array.isArray(response.data) === false) {
     					
-    					this.isLoading = "";
     					this.errorDesc = response.data
     					
 					} else if(response.data.error == undefined && response.data[0].meta!=undefined) {
@@ -158,8 +157,8 @@ export default  {
 					}
 				}) 
 				.catch( (errors) => {
-					this.isLoading = "";
-					console.log(errors);
+    				this.$appdata.isLoading = "";
+					console.log(errors)
 				})
             
         },
@@ -176,14 +175,13 @@ export default  {
         }
     },
     mounted() {
-       
     }
 }
 
 </script>
 <style lang="scss">
 
-#loading-status.loading{
+#merrweb-esbd-loading-status {
 	position: absolute;
 	display: flex;
 	justify-content: space-around;
@@ -196,7 +194,7 @@ export default  {
 	z-index: 9999;
 }
 
-#merrweb-api input + button {
+#merrweb-esbd-wrapper input + button {
 	margin-left: .4em;
 }
 
@@ -204,27 +202,11 @@ span.search-query {
 	font-weight: bold;
 }
 
-#loading-status .status{
-	display: none;
-}
-
-#loading-status.loading .status{
-	display: inherit;
-}
 
 .hide {
 	display: none;
 }
 
-#merrweb-api {
-	display: block;
-	display: flex;
-	align-items: center;
-}
-
-#merrweb-api div {
-	padding: .2em .2em .2em .2em;
-}
 
 .branding {
 	font-size: .9rem;

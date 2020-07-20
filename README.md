@@ -17,18 +17,17 @@ It uses the free Merriam-Webster API, so you'll need to [create a free account a
 
 Add the shortcode ```[merrweb-spanish-english]``` to a page or post where you would like the dictionary.
 
-Visitors to the post or page will see an input field to enter a word or phrase. When the user clicks the submit button, the input is passed to the Merriam-Webster API and a list of Spanish and English definitions are displayed. If no results are found, a list of suggestions is displayed.  
+Visitors to the post or page will see an input field to enter a word or phrase. When the user clicks the submit button, the input is passed to the Merriam-Webster API and a list of Spanish and English definitions are displayed. If no results are found, a list of clickable suggestions is displayed.  
 
-## Styling Results
+## Styling 
 
-Results and suggestions render as unordered lists that should pick up whatever styling is in place in your theme. You can style them by making use of some CSS selectors.
-
+Results and suggestions render as unordered lists that should pick up your active theme's styles. You can further style them in your CSS with some selectors.
 
 * All shortcode contents are wrapped in a div with an id of merrweb-esbd-wrapper and a class of merrweb-esbd.
 
 ### Results
 
-* Results are wrapped in a div with class of ```show```. Each result is an unordered list with 3 items: The language of the result; the "Functional Label" of the result, such as noun, verb, adjective; a nested list of one or more translated short definitions.
+* Results are wrapped in a div with class of ```show```. Each result is an unordered list with 3 items: The language label of the result; the functional label of the result (noun, verb, adjective, etc.); and a nested list of one or more translated short definitions.
 
 #### Example
 
@@ -64,6 +63,37 @@ Results and suggestions render as unordered lists that should pick up whatever s
             </li>
         </ul>
     </div>
+```
+
+### Suggestions
+
+When no results are found, the shortcode displays a list of clickable suggestions rendered as a list.
+
+#### Example 
+
+```
+<div id="merrweb-esbd-wrapper" class="merrweb-esbd">
+    <form>
+        <div class="form-group">
+                <input placeholder="Enter a word or phrase" type="text" name="q" id="q" class="form-control">
+                <button type="submit" class="btn btn-primary">Define</button>
+        </div>
+    </form>
+    <div class="show">
+        <p>Nothing found for <span class="search-query">tandori</span>. Some suggestions:</p>
+        <ul class="suggestions">
+            <li><a href="#">candor</a></li>
+            <li><a href="#">candor</a></li>
+            <li><a href="#">standard</a></li>
+            <li><a href="#">candors</a></li>
+            <li><a href="#">andorra</a></li>
+            <li><a href="#">tango</a></li>
+            <li><a href="#">tanda</a></li>
+            <li><a href="#">tanto</a></li>
+            <li><a href="#">tango</a></li>
+        </ul>
+    </ul>
+</div>
 ```
 
 

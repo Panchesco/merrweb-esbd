@@ -17,12 +17,12 @@
 			<li class="shortdef"><Shortdef v-bind:item="item"></Shortdef></li>
 		</ul>
 	</div>
-	<ul v-if="showSuggs===true" :suggestions="suggestions" :class="showResults">
-		<li><p v-html="noResults()"></p></li>
-		<ul>
+	<div v-if="showSuggs===true" :suggestions="suggestions" :class="showResults">
+		<p v-html="noResults()"></p>
+		<ul class="suggestions">
 			<li v-for="(item,key) in suggestions" :key="key"><a href="#" @click="suggestion(item)">{{item}}</a></li>
 		</ul>
-	</ul>
+	</div>
 	<div :class="showResults">
 		<div class="branding">
 	    	<div><a :href="logoHref"><img :src="logoSrc" :alt="logoAlt"></a></div>

@@ -1,6 +1,6 @@
 <template>
-    <div id="merrweb-api-wrapper" :class="appdata.slug">
-    <form id="merrweb-api">
+    <div id="merrweb-esbd-wrapper" :class="appdata.slug">
+    <form>
 		<div class="form-group">
 			<input v-model="appdata._wpnonce" type="hidden" />
 			<input class="form-control" :placeholder="placeholder" type="text" name="q" id="q" v-model="appdata.q" v-on:input="clearResults()" />
@@ -26,7 +26,7 @@
 	<div :class="showResults">
 		<div class="branding">
 	    	<div><a :href="logoHref"><img :src="logoSrc" :alt="logoAlt"></a></div>
-	    	<div>Results courtesy <a :href="logoHref">Merriam-Webster Inc.</a></div>
+	    	<div>Results provided by <a :href="logoHref">Merriam-Webster Inc.</a></div>
 		</div>
     </div>
 	<p v-if="errorDesc!=null">{{errorDesc}}</p>
@@ -133,7 +133,6 @@ export default  {
 					if( Array.isArray(response.data) === false) {
     					
     					this.isLoading = "";
-    					this.total_results = 0;
     					this.errorDesc = response.data
     					
 					} else if(response.data.error == undefined && response.data[0].meta!=undefined) {
@@ -182,7 +181,7 @@ export default  {
 }
 
 </script>
-<style>
+<style lang="scss">
 
 #loading-status.loading{
 	position: absolute;
@@ -242,6 +241,10 @@ span.search-query {
 .branding a {
 	color: #AFCCD8;
 	text-decoration: none;
+}
+
+.branding a:hover {
+    text-decoration: underline;
 }
 
 .branding div {

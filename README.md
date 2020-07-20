@@ -11,7 +11,7 @@ It uses the free Merriam-Webster API, so you'll need to [create a free account a
 ## Activation and Settings
 
 * Activate the plugin on the WP plugins page.
-* Follow the settings link to the plugin's settings page where you'll add your Merriam-Webster Spanish-English Dictionary API key. If you like, you can configure some short code messaging, button text and CSS selectors here.
+* Follow the settings link to the plugin's settings page where you'll add your Merriam-Webster Spanish-English Dictionary API key. If you like, you can configure some short code messaging, button text and CSS selectors there.
 
 ## Usage
 
@@ -100,7 +100,7 @@ When no results are found, the shortcode displays a list of clickable suggestion
 
 The shortcode includes a default spinner that overlays the page while fetching results from the API. You can disable it by changing the loading element ID value in the plugin settings. It is visible if the 
 
-Additionally, whenever an AJAX request to the API is being made, the ```window.merrweb_esbd.isLoading``` property is set to the value of the Loading Element Class setting. 
+Additionally, whenever an AJAX request to the API is being made, the ```window.merrweb_esbd.isLoading``` property is set to the value of the Loading Element Class setting. If you're customizing things with your own spinner, you can have it check that property for your loading class name.
 
 ### Branding 
 

@@ -8,7 +8,7 @@
  * Plugin Name:       Spanish-English Dictionary
  * Plugin URI:        https://github.com/panchesco/merrweb-esbd.git
  * Description:       A shortcode for adding a bilingual Spanish-English dictionary to a post or page.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Author:            Richard Whitmer
  * Author URI:        https://github.com/panchesco
  * License:           GPL-2.0+
@@ -23,15 +23,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
+    var $plugin_name = "Spanish-English Dictionary";
     var $dist_url; // Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
-    						'loadingId' => 'loading-status',
+    						'loadingId' => 'merrweb-esbd-loading-status',
     						'loadingClass' => 'loading',
     						'resultsMsg' => 'We found %d definitions for %s.',
     						'noResultsMsg' => 'Nothing found for %s. Some suggestions:',
     						'btnTxt' => 'Define');
-    var $version = '1.0.0';
+    var $version = '1.0.1';
     var $enpoint;
     var $q;
     var $slug = 'merrweb-esbd';
@@ -66,7 +67,7 @@ class MerrWebEsbd {
 
 function merrweb_esbd_add_admin_menu(  ) { 
 
-	add_options_page( 'Merriam-Webster Bilingual Dictionary', 'Merriam-Webster Bilingual Dictionary', 'manage_options', $this->slug, [$this,'merrweb_esbd_options_page'] );
+	add_options_page( $this->plugin_name, $this->plugin_name, 'manage_options', $this->slug, [$this,'merrweb_esbd_options_page'] );
 
 }
 
@@ -151,8 +152,8 @@ function merrweb_esbd_settings_init(  ) {
 	);
 	
 	add_settings_field( 
-		'merrweb_esbd[loadingId]', 
-		__( 'Loading Element ID', 'merrweb-esbd' ), 
+		'merrweb_esbd[loadingId]',
+		__( 'Use included AJAX overlay and spinner while fetching results?', 'merrweb-esbd' ), 
 		[$this,'merrweb_esbd_loadingId_render'], 
 		'merrweb-esbd', 
 		'merrweb_esbd_shortcode_section' 
@@ -222,8 +223,8 @@ function merrweb_esbd_btnTxt_render(  ) {
 function merrweb_esbd_loadingId_render(  ) { 
 
 	?>
-	<p>The loading element ID. The default page overlay ID is merrweb-esbd-loading-status.</p>
-	<input type='text' name='merrweb_esbd_settings[loadingId]' value='<?php echo $this->options['loadingId']; ?>'>
+	<input type='hidden' name='merrweb_esbd_settings[loadingId]' value='ignoring-merrweb-esbd-spinner'>
+	<input type='checkbox' name='merrweb_esbd_settings[loadingId]' value='merrweb-esbd-loading-status'<?php if($this->options['loadingId']=='merrweb-esbd-loading-status') {?> checked<?php }?>> 
 	<?php
 
 }
@@ -234,7 +235,7 @@ function merrweb_esbd_loadingId_render(  ) {
 function merrweb_esbd_loadingClass_render(  ) { 
 
 	?>
-	<p>The loading element class name.</p>
+	<p>loading element class name.</p>
 	<input type='text' name='merrweb_esbd_settings[loadingClass]' value='<?php echo $this->options['loadingClass']; ?>'>
 	<?php
 
@@ -423,7 +424,7 @@ function merrweb_esbd_options_page(  ) {
  
  function admin_styles() {
 	 
-	 if( is_admin() && $_GET['page'] == 'merrweb-esbd') {
+	 if( is_admin() && isset($_GET['page']) && $_GET['page'] == 'merrweb-esbd') {
 		 wp_register_style('merrweb-esbd-admin-css', plugins_url() . '/merrweb-esbd/css/styles.css',[],$this->version);
 		 wp_enqueue_style('merrweb-esbd-admin-css');
 	 }

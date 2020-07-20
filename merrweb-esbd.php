@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class MerrWebEsbd {
     
-    var $dist_url = 'http://localhost:4000'; // Set this to dev server URL if in development; otherwise, leave it blank.
+    var $dist_url;// Set this to dev server URL if in development; otherwise, leave it blank.
     var $options = array(	'api_key' => '',
     						'placeholder' => 'Word to translate',
     						'loadingId' => 'loading-status',
@@ -200,6 +200,7 @@ function merrweb_esbd_api_key_render(  ) {
 function merrweb_esbd_placeholder_render(  ) { 
 
 	?>
+	<p>This is the placeholder text for the search query input.</p>
 	<input type='text' name='merrweb_esbd_settings[placeholder]' value='<?php echo $this->options['placeholder']; ?>'>
 	<?php
 
@@ -210,6 +211,7 @@ function merrweb_esbd_placeholder_render(  ) {
 function merrweb_esbd_btnTxt_render(  ) { 
 
 	?>
+	<p>This the the text that appears on the submit button.</p>
 	<input type='text' name='merrweb_esbd_settings[btnTxt]' value='<?php echo $this->options['btnTxt']; ?>'>
 	<?php
 
@@ -220,6 +222,7 @@ function merrweb_esbd_btnTxt_render(  ) {
 function merrweb_esbd_loadingId_render(  ) { 
 
 	?>
+	<p>The loading element ID. The default page overlay ID is loading-status.</p>
 	<input type='text' name='merrweb_esbd_settings[loadingId]' value='<?php echo $this->options['loadingId']; ?>'>
 	<?php
 
@@ -231,6 +234,7 @@ function merrweb_esbd_loadingId_render(  ) {
 function merrweb_esbd_loadingClass_render(  ) { 
 
 	?>
+	<p>The loading element class. The default page overly class is loading. The script will add this class to the overlay with the overlay ID while the results are being fetched from the API.</p>
 	<input type='text' name='merrweb_esbd_settings[loadingClass]' value='<?php echo $this->options['loadingClass']; ?>'>
 	<?php
 
@@ -242,6 +246,7 @@ function merrweb_esbd_loadingClass_render(  ) {
 function merrweb_esbd_noResultsMsg_render(  ) { 
 
 	?>
+	<p>This is the message to show users when no results are found. You may use the %s placeholder to display the submitted phrase.</p>
 	<textarea name='merrweb_esbd_settings[noResultsMsg]'><?php echo $this->options['noResultsMsg']; ?></textarea>
 	<?php
 
@@ -252,6 +257,7 @@ function merrweb_esbd_noResultsMsg_render(  ) {
 function merrweb_esbd_resultsMsg_render(  ) { 
 
 	?>
+	<p>This is the message to show users when results are found. You may use the %d placeholder to show the total results found and the %s placeholder to display the submitted phrase.</p>
 	<textarea name='merrweb_esbd_settings[resultsMsg]'><?php echo $this->options['resultsMsg']; ?></textarea>
 	<?php
 

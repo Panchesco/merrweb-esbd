@@ -8,7 +8,7 @@
  * Plugin Name:       Spanish-English Dictionary
  * Plugin URI:        https://github.com/panchesco/merrweb-esbd.git
  * Description:       A shortcode for adding a bilingual Spanish-English dictionary to a post or page.
- * Version:           1.0.1
+ * Version:           1.0.2
  * Author:            Richard Whitmer
  * Author URI:        https://github.com/panchesco
  * License:           GPL-2.0+
@@ -32,7 +32,7 @@ class MerrWebEsbd {
     						'resultsMsg' => 'We found %d definitions for %s.',
     						'noResultsMsg' => 'Nothing found for %s. Some suggestions:',
     						'btnTxt' => 'Define');
-    var $version = '1.0.1';
+    var $version = '1.0.2';
     var $enpoint;
     var $q;
     var $slug = 'merrweb-esbd';
